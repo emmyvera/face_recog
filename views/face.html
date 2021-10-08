@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <script src="./face-api.js"></script>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <img id="myImage0" src="./happy.jpg" />
+    <img id="myImage1" src="./emmy02.jpg" />
+  </body>
+  <script>
+    const MODEL_URL = './models'
+
+    async function justWork() {
+      await faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+      await faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL)
+      await faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL)
+
+      const input0 = document.getElementById('myImage0')
+      const input1 = document.getElementById('myImage1')
+
+      const detection1 = await faceapi
+        .detectAllFaces(
+          input0,
+          new faceapi.SsdMobilenetv1Options({ minConfidence: 0.8 }),
+        )
+        .withFaceLandmarks()
+        .withFaceDescriptors()
+
+      const detection2 = await faceapi
+        .detectAllFaces(input1)
+        .withFaceLandmarks()
+        .withFaceDescriptors()
+
+      const dis = faceapi.euclideanDistance(
+        detection1[0].descriptor,
+        detection2[0].descriptor,
+      )
+
+      console.log(detection1)
+      console.log(dis)
+    }
+
+    justWork()
+    Promise.all([])
+      .then((val) => {
+        // console here gives an array of undefined
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  </script>
+</html>
